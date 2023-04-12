@@ -37,7 +37,7 @@ async function update(body){
      if(body.password || body.username)  await auth.changeAuth(body)
      if(body.username || body.name)  await store.changeUser(body,TABLA)
      
-     
+      
      
 
 
