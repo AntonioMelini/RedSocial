@@ -13,6 +13,7 @@ postRouter.get('/',async(req,res)=>{
         
             console.log('entro a /post de los posts');
             let data= await controller.list();
+           
             response.success(req,res,data,200)
         
        
@@ -20,12 +21,12 @@ postRouter.get('/',async(req,res)=>{
         response.error(req,res,error.message,error.code)
     }
 })
-postRouter.post('/',async(req, res)=>{
+postRouter.post('/',secure('follow'),async(req, res)=>{
     try {
         console.log("entro a /create");
         const body=req.body
       
-        if( body.text && body.userId ){
+        if( body.text && body.userId && body.userId==req.user.id){
          await controller.upsert(body)
         
         response.success(req,res,"posting was succed",200);
@@ -40,7 +41,7 @@ postRouter.get('/getOne/:id',async(req, res)=>{
     try {
        // console.log("entro a /remove");
         const {id}=req.params
-       
+       console.log("entro a getone de post");
         if(id.trim()!="" ){
         let x=await controller.getOne(id)
         response.success(req,res,x,200);
@@ -69,23 +70,30 @@ postRouter.put('/',secure('post'),async(req,res)=>{
         response.error(req,res,error.message,error.statusCode)
     }
 })
-postRouter.get('/remove/:id',async(req, res)=>{
+postRouter.delete('/remove/:id',secure('follow'),async(req, res)=>{
     try {
        // console.log("entro a /remove");
         const {id}=req.params
        
         if(id ){
-        let x=await controller.remove(id)
-        if (x.affectedRows) {
-            return response.success(req,res,"post elimination was succed",200); 
-        }
-        response.error(req,res,"post with that id does´t exist",400)
+        let x=await controller.remove(id,req.user.id)
+        console.log("esto devuelve el coso",x);
+        // if (x.affectedRows) {
+             return response.success(req,res,x,200); 
+        // }
+        //response.error(req,res,"post with that id does´t exist",400)
         
         }else response.error(req,res,'send valid id',400)
     } catch (error) {
-        response.error(req,res,error.message,500)
+        console.log("entro a error de remove post ",error);
+        response.error(req,res,error.body,500)
     }
     
 })
 
 module.exports= postRouter;
+
+
+
+
+

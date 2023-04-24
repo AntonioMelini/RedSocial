@@ -15,8 +15,9 @@ module.exports= function (injectedStore) {
             console.log('entro a controler login');
         let data= await store.query('login',username,password)
         console.log("esta es la data",data);
-        if (data.length===237) return data
-         throw new Error(data)
+        if (data.error) throw new Error(data.body)
+        return data
+         
         
        
         

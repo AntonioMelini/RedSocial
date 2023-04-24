@@ -17,9 +17,7 @@ async function list(){
 
    
 }
-async function followers(id){
-    return store.followers(id,'user_follow')
-}
+
 
 function getOne(id){
     console.log("get one users controler");
@@ -49,9 +47,13 @@ function remove(id){
     return store.remove(TABLA,id);
 }
 
-function follow(userFrom,userTo){
+function follow(tabla,userFrom,userTo){
     console.log("entroa  controller follow");
-    return store.follow(userFrom,userTo);
+    return store.follow(tabla,userFrom,userTo);
+}
+async function followers(id){
+    console.log("esto es controller user followers",id);
+    return store.followers('followers',id)
 }
 
 

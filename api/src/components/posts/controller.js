@@ -10,14 +10,15 @@ module.exports = function (injectedStore){
         return store.list(TABLA)
     }
     async function getOne(id){
+        console.log("entro a getone de controller post");
         return store.listOne(TABLA,id,"id")
     }
 
-    async function upsert(body){
+    async function upsert(body){ 
         return store.upsert(TABLA,body)
     }
-    async function remove(id){
-        return store.remove(TABLA,id)
+    async function remove(idPost,id){ 
+        return store.remove(TABLA,idPost,id)
     }
     async function update(id,text){
         //console.log(text);

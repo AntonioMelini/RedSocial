@@ -16,6 +16,7 @@ const tokenSign= (user)=> {
 // }
 
 const antonio=(req,res,owner)=>{
+    try {
         let x='';
         console.log("entro a la funcion antonio");
         const authorization= req.headers.authorization || '';
@@ -34,11 +35,17 @@ const antonio=(req,res,owner)=>{
             return x;
         }
         return x;
+    } catch (error) {
+        console.log("este es el error",error);
+        response.error(req,res,error,401)
+    }
+        
    
     
 }
-const logged=(req)=>{
-    
+const logged=(req,res)=>{
+    try {
+        let x="1";
         console.log("entro a la funcion logged");
         const authorization= req.headers.authorization || '';
         if(!authorization) throw new Error('no hay token');
@@ -48,6 +55,13 @@ const logged=(req)=>{
         let token = authorization.split(' ')[1]; 
         let tokenListo= jwt.verify(token, config.jwt.secret)
         req.user=tokenListo
+         x=""
+    } catch (error) {
+        console.log("este es el error",error.message);
+        response.error(req,res,error.message,401)
+    }
+    
+       
         //console.log(tokenListo.id,owner);
         //console.log(tokenListo.id ==owner);
        

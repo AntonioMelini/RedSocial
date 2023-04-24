@@ -9,10 +9,12 @@ const controller= require('./index');
 router.get('/',async(req, res)=>{
     try {
         console.log("entro a '/' en user de api");
-        let data= await controller.list();
+         let data=await controller.list();
+         
         data= JSON.parse(JSON.stringify(data));
         console.log("esto es la data",data);
         response.success(req,res,data,200);
+        
     } catch (error) {
         response.error(req,res,error.message,500)
     }
@@ -23,19 +25,21 @@ router.get('/follow/:id',secure('follow'),async(req,res)=>{
     try {
         console.log("entro a network follow");
         const {id}=req.params;
-        if(id){
-            let data=await controller.follow(req.user.id,id)
+        if(id && id!= req.user.id){
+            let data=await controller.follow("user_follow",req.user.id,id)
+            console.log("esto es el follow",data);
             response.success(req,res,data,200)
         }else{
-            response.error(req,res,"please send an id",400)
+            response.error(req,res,"please send an id",400) 
         }
     } catch (error) {
         response.error(req,res,error.message,500)
-    }
+    } 
 })
 router.get('/follow',secure('follow'),async (req,res)=>{
     try {
         let data= await controller.followers(req.user.id)
+        console.log("esto es controller user",data);
         response.success(req,res,data,200)
     } catch (error) {
         response.error(req,res,error.message,500)
@@ -61,9 +65,9 @@ router.post('/create',async(req, res)=>{
     }
     
 })
-router.get('/remove/:id',async(req, res)=>{
+router.delete('/remove/:id',secure('update'),async(req, res)=>{
     try {
-       // console.log("entro a /remove");
+        console.log("entro a /remove de user");
         const {id}=req.params
        
         if(id ){
@@ -78,14 +82,16 @@ router.get('/remove/:id',async(req, res)=>{
 })
 router.get('/get/:id',async(req, res)=>{
     try {
-        //console.log("entro a /:id");
+        console.log("entro a /:id");
         if(req.params.id){
         let data= await controller.getOne(req.params.id);
+        //console.log("data al final",data);
         if(!data.length) return response.error(req,res,'can´t find ID',400)
         response.success(req,res,data,200);
         }else response.error(req,res,'send valid id',400)
     } catch (error) {
-        response.error(req,res,error.message,500)
+        console.log(error);
+        response.error(req,res,error.body,500)
     }
     
 })

@@ -10,7 +10,8 @@ const getAll=async (req,res,next)=>{
         if(tabla){
             
             let data = await store.list(tabla)
-            data && response.success(req,res,data,200) 
+            console.log("esta es la data de getAll microservice", data);
+            data.length ? response.success(req,res,data,200) : response.success(req,res,"not post yet",200) 
         }else{
             response.error(req,res,'please send a valid table',400);
         }
@@ -27,6 +28,11 @@ const getOne=async (req,res,next)=>{
             if(tabla==='user_follow'){
                 let data = await store.listOne(tabla,id,'id')
                 return response.success(req,res,data,200) 
+            }
+            if(tabla=='post'){
+                console.log("entro a post en microservice");
+                let data = await store.listOne(tabla,id,'id')
+                return response.success(req,res,data,200)
             }
             let data = await store.listOne(tabla,id,'id')
             data.length ? response.success(req,res,data,200) 
@@ -54,27 +60,40 @@ const createFollow = async (req,res,next)=>{
         response.error(req,res,error.message,500)
     }
 }
+const followers = async (req,res,next)=>{
+    try {
+        
+        console.log("entro a followers microservice:",req.body);
+        let x = await store.followers(req.body.id)
+        console.log("esto es el resultado: ",x);
+        response.success(req,res,x,200)
+    } catch (error) {
+        response.error(req,res,error.message,500)
+    }
+}
 const create=async (req,res,next)=>{
     try {
         console.log("entro a create de microservixce");
         const {tabla}=req.params;
         const body= req.body
        
-        console.log(tabla,body);
+        //console.log(tabla,body);
         if(tabla){
             if(tabla=='users' && body.password && body.username && body.name){
                 console.log('entro a users');
                 let password = await bcrypt.hash(body.password,5)
                 let x=await store.upsert('auth',{username:body.username,password})
-               
-                await store.upsert(tabla,{id:x.id,username:body.username,name:body.name})
+             
+                await store.upsert(tabla,{id:x.insertId,username:body.username,name:body.name})
                 return response.success(req,res,"upsert was succed",201);
             
             }else if(tabla=='login' && body.password && body.username){
                
                     console.log("entro a login de microservice");
                     let data = await store.query('auth',body.username);
-                    data= JSON.parse(JSON.stringify(data));
+                    if(!data)  return response.error(req,res,"invalid username",400) 
+                    console.log("esto es data en microservixce",data);
+                   // data= JSON.parse(JSON.stringify(data));
                     let passwordPerfect = await bcrypt.compare(body.password,data.password)
                     
                     if(passwordPerfect){
@@ -86,11 +105,17 @@ const create=async (req,res,next)=>{
                     return response.error(req,res,"password incorrect",400)
                 
             }else if(tabla=='post' && body.text && body.userId){
+                
                 await store.upsert(tabla,{text:body.text,userId:body.userId});
                 return response.success(req,res,"upsert was succed",201);
             
+            }else if(tabla=='user_follow' && body.userFrom && body.userTo){
+                console.log("entro a user_follow");
+                 await store.follow(tabla,body.userFrom,body.userTo)
+                
+                return response.success(req,res,"follow succed")
             }
-
+ 
         }else{
             response.error(req,res,'please send a valid table',400);
         }
@@ -137,23 +162,25 @@ const update= async (req,res,next)=>{
 }
 const remove= async(req,res,next)=>{
     try {
+        console.log("entro a remove de microservice");
         const {tabla,id}=req.params;
         const body=req.body
-
+        console.log(tabla,id,body.id);
         if(tabla==='users' ){
-            if( req.user.id==id){
+            
                 await store.remove('auth',id)
                  await store.remove(tabla,id);
                
                 return response.success(req,res,'the remove was succed',200)
-            }else throw new Error('invalid id');
+            
 
         }
          else if(tabla==='post' ){
-            if( req.user.id==body.userId){
-                await store.remove(tabla,id)
+           console.log("entro a post de microservice");
+                await store.remove(tabla,id,body.id)
+                
                 return response.success(req,res,'the remove was succed',200)
-            }else throw new Error('invalid id');
+          
 
         }
         else{
@@ -167,6 +194,7 @@ const remove= async(req,res,next)=>{
         // console.log(data);
 
     } catch (error) {
+        console.log("entro a error de microservice controller",error.message);
         response.error(req,res,error.message,500)
     }
 }
@@ -196,5 +224,7 @@ module.exports={
     createFollow,
     update,
     remove,
-    removeFollow
+    removeFollow,
+    followers
+    
 }

@@ -37,6 +37,8 @@ function list (tabla){
         })
 }
 function listOne(tabla,id,prop){
+    console.log("entro a listone mysql");
+    console.log(id,prop);
 
         if(tabla==="user_follow"){
             return new Promise((resolve,rejected)=>{
@@ -79,7 +81,7 @@ function listOne(tabla,id,prop){
     
 
     }else if(tabla==="users"){
-        console.log("entro a la de users");
+        console.log("entro a la de users",data);
         return new Promise ((resolve,rejected)=>{
             coneccion.query(`insert into Red_Social.${tabla} set ?`,data,(error,datos)=>{
                 if(error) return rejected(error);
@@ -169,10 +171,28 @@ function changeUser(user,tabla){
     }
 }
 
- function remove(tabla,id){
+ async function remove(tabla,idTable,id,){
+    
+    console.log("esto es remove mysql",tabla,idTable,id);
+    if(tabla=='post'){
+        let posts=await list("post");
+        console.log(posts);
+        let x= posts.filter((post)=>post.id==idTable && post.userId==id )
+        console.log(x);
+        if(x.length){
+            console.log("!!!!!!!!!!entroooo!!!!");
+            return new Promise((resolve,rejected)=>{
+        coneccion.query(`delete from Red_Social.${tabla} where id=${idTable}`,(error,data)=>{
+            if(error) return rejected(error);
+            
+            resolve(data);
+        })
+    })
+        }else throw new Error('you cant remove another post´s users')
+    }
     
     return new Promise((resolve,rejected)=>{
-        coneccion.query(`delete from Red_Social.${tabla} where id=${id}`,(error,data)=>{
+        coneccion.query(`delete from Red_Social.${tabla} where id=${idTable}`,(error,data)=>{
             if(error) return rejected(error);
             
             resolve(data);
@@ -181,14 +201,16 @@ function changeUser(user,tabla){
 }
 
 
-async function follow(userFrom,userTo){
+async function follow(tabla,userFrom,userTo){
+    console.log("entro a follow mysql");
     let users= await list("users");
     console.log(users);
     let userWanted= users.filter(user=>user.id==userTo)
     console.log(userWanted);
     if(userWanted.length){
+        
         return new Promise((resolve,rejected)=>{
-            coneccion.query(`insert into Red_Social.user_follow (User_from,user_to) values (${userFrom},${userTo})`,(err,data)=>{
+            coneccion.query(`insert into Red_Social.${tabla} (User_from,user_to) values (${userFrom},${userTo})`,(err,data)=>{
                 if(err) return rejected(err);
 
                 resolve (data);
@@ -209,9 +231,9 @@ async function follow(userFrom,userTo){
     })
 }
 function followers(id){
-    
+    console.log("entro a followers remote.js");
     return new Promise((resolve,rejected)=>{
-        coneccion.query(`select * from Red_Social.users  join Red_Social.user_follow on Red_Social.user_follow.User_from=Red_Social.users.id  where user_to=${id}`,(err,data)=>{
+        coneccion.query(`SELECT username FROM Red_Social.users inner join Red_Social.user_follow on users.id=user_from where user_to=${id}  `,(err,data)=>{
             if(err) return rejected(err)
 
             resolve(data)
