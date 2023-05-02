@@ -6,7 +6,7 @@ const app = express();
 const user = require('./src/components/user/network.js')
 const authRouter = require('./src/components/auth/network.js')
 //const postouter=require('./src/components/posts/network')
-const config = require('../config')
+const config = require('../config.js')
 
 
 app.use(bodyParser.json())
