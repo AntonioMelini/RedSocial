@@ -1,9 +1,9 @@
 const {Router} = require('express');
 
-const response= require('../../../../network/response')
+const response= require('../../../network/response')
 const postRouter=Router();
 const controller = require('./index')
-const secure=require('../user/secure')
+const secure=require('../../../api/src/components/user/secure')
 
 
 postRouter.get('/',async(req,res)=>{
