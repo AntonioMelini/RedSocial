@@ -11,7 +11,7 @@ const getAll=async (req,res,next)=>{
             
             let data = await store.list(tabla)
             console.log("esta es la data de getAll microservice", data);
-            data.length ? response.success(req,res,data,200) : response.success(req,res,"not post yet",200) 
+            data.length ? response.success(req,res,data,200) : response.success(req,res,"nothing upload yet",200) 
         }else{
             response.error(req,res,'please send a valid table',400);
         }
@@ -124,14 +124,28 @@ const create=async (req,res,next)=>{
         response.error(req,res,error,500)
     }
 }
+
+const followin= async (req,res)=>{
+    try {
+        console.log("entro a followin de microservice",req.body);
+        let x=await store.followin(req.body.id)
+        response.success(req,res,x,200)
+        
+    } catch (error) {
+        response.error(req,res,error.message,400)
+    }
+}
+
 const update= async (req,res,next)=>{
     try {
         const {tabla}=req.params;
         const body=req.body;
-        console.log(body.id,req.user);
+        console.log(body);
         if(tabla==='users'){
-            if(body.id==req.user.id ){
+            console.log("entro a update de user en microservices controller");
+            
                 if(body.password || body.username){
+                    console.log(" se hace el hash de la password");
                     body.password ? body.password= await bcrypt.hash(body.password,5):null;
                     await store.changeAuth(body,'auth');
                     
@@ -141,13 +155,13 @@ const update= async (req,res,next)=>{
                    
                 }
 
-            } else{
-                response.error(req,res,"you can't modify another user",401)
-            }
+             
             // password name username 
            
         } 
         if( tabla==='post'){
+
+            console.log("entro a update de post en microservices controller");
             if(body.userId==req.user.id)
                await store.updatePost(tabla,body.id,body.text) 
 
@@ -169,6 +183,8 @@ const remove= async(req,res,next)=>{
         if(tabla==='users' ){
             
                 await store.remove('auth',id)
+                await store.removeAll('post',"userId",id)
+                await store.removeAll('user_follow',"User_from",id)
                  await store.remove(tabla,id);
                
                 return response.success(req,res,'the remove was succed',200)
@@ -225,6 +241,9 @@ module.exports={
     update,
     remove,
     removeFollow,
-    followers
+    followers,
+    followin
+    
+
     
 }

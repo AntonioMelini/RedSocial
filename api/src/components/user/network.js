@@ -26,23 +26,38 @@ router.get('/follow/:id',secure('follow'),async(req,res)=>{
         console.log("entro a network follow");
         const {id}=req.params;
         if(id && id!= req.user.id){
+            let user= await controller.getOne(req.user.id)
+        if(!user.length) throw new Error("Invalid user")
             let data=await controller.follow("user_follow",req.user.id,id)
             console.log("esto es el follow",data);
             response.success(req,res,data,200)
         }else{
-            response.error(req,res,"please send an id",400) 
+            response.error(req,res,"please send a valid id",400) 
         }
     } catch (error) {
-        response.error(req,res,error.message,500)
+        console.log("este es el error que llega",error);
+        response.error(req,res,error.body.sqlMessage ||error.message,401)
     } 
 })
 router.get('/follow',secure('follow'),async (req,res)=>{
     try {
+        
         let data= await controller.followers(req.user.id)
         console.log("esto es controller user",data);
         response.success(req,res,data,200)
     } catch (error) {
+        console.log("entro a error de follow",error);
         response.error(req,res,error.message,500)
+    }
+})
+router.get('/followin',secure('follow'),async(req,res)=>{
+    try {
+        let x= await controller.followin(req.user.id);
+        console.log("esto es lo que devolvio todo",x);
+        x.length ? response.success(req,res,x,200) :  response.success(req,res,"not following´s users yet")
+    } catch (error) {
+        console.log("entro a error de followin de user");
+        response.error(req,res,error.message,401)
     }
 })
 
@@ -58,7 +73,7 @@ router.post('/create',async(req, res)=>{
         response.success(req,res,x,200);
         }else response.error(req,res,'send valid params',400)
     } catch (error) {
-        if(error.body.sqlMessage=="Duplicate entry 'anto' for key 'auth.username_UNIQUE'"){
+        if(error.body.sqlMessage){
             return response.error(req,res,"username not available",400)
         }
         response.error(req,res,error.message,400)
@@ -76,6 +91,7 @@ router.delete('/remove/:id',secure('update'),async(req, res)=>{
         response.success(req,res,x,200);
         }else response.error(req,res,'send valid id',400)
     } catch (error) {
+        console.log("QUE ṔASO PA?",error);
         response.error(req,res,error.message,500)
     }
     

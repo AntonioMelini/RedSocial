@@ -18,7 +18,7 @@ const tokenSign= (user)=> {
 const antonio=(req,res,owner)=>{
     try {
         let x='';
-        console.log("entro a la funcion antonio");
+        console.log("entro a la funcion antonio",owner);
         const authorization= req.headers.authorization || '';
         if(!authorization) throw new Error('no hay token');
     
@@ -30,14 +30,16 @@ const antonio=(req,res,owner)=>{
         //console.log(tokenListo.id ==owner);
         if(tokenListo.id != owner){
             //throw new Error('no puedes modificar otro usuario',401)
-            x="1"
-             response.error(req,res,'no puedes modificar otro usuario',401)
-            return x;
+            
+             return x=new Error('no puedes modificar otro usuario')
+            
         }
-        return x;
+        req.user=tokenListo
+        return x=200
+       
     } catch (error) {
-        console.log("este es el error",error);
-        response.error(req,res,error,401)
+        //console.log("este es el error",error);
+         return error.message
     }
         
    
@@ -45,20 +47,23 @@ const antonio=(req,res,owner)=>{
 }
 const logged=(req,res)=>{
     try {
-        let x="1";
+        let err=false;
         console.log("entro a la funcion logged");
         const authorization= req.headers.authorization || '';
-        if(!authorization) throw new Error('no hay token');
+        if(!authorization) throw new Error('no hay token'); 
     
         if(authorization.indexOf('Bearer ') === -1) throw new Error('Formato invalido',401)
 
         let token = authorization.split(' ')[1]; 
         let tokenListo= jwt.verify(token, config.jwt.secret)
+        console.log("este es el token listo",tokenListo);
         req.user=tokenListo
-         x=""
-    } catch (error) {
-        console.log("este es el error",error.message);
-        response.error(req,res,error.message,401)
+        return err;
+        
+        }catch(error){
+         console.log("este es el error",error.message);
+         return error
+        //response.error(req,res,error.message,401)
     }
     
        

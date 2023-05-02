@@ -15,14 +15,16 @@ module.exports = function (injectedStore){
     }
 
     async function upsert(body){ 
+        console.log("entro a upsert de controller");
         return store.upsert(TABLA,body)
     }
     async function remove(idPost,id){ 
+        console.log("controller remove",idPost,id);
         return store.remove(TABLA,idPost,id)
     }
-    async function update(id,text){
-        //console.log(text);
-        return store.updatePost(TABLA,id,text)
+    async function update(data){
+        console.log("controller de post",data);
+        return store.updatePost(TABLA,data)
     }
 
     return{

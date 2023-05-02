@@ -21,18 +21,18 @@ postRouter.get('/',async(req,res)=>{
         response.error(req,res,error.message,error.code)
     }
 })
-postRouter.post('/',secure('follow'),async(req, res)=>{
+postRouter.post('/',secure('update'),async(req, res)=>{
     try {
         console.log("entro a /create");
         const body=req.body
-      
+      //console.log("en create",);
         if( body.text && body.userId && body.userId==req.user.id){
          await controller.upsert(body)
         
         response.success(req,res,"posting was succed",200);
         }else response.error(req,res,'send valid params',400)
     } catch (error) {
-        
+        console.log("aca hay un error en network post");
         response.error(req,res,error.message,500)
     }
     
@@ -57,10 +57,10 @@ postRouter.put('/',secure('post'),async(req,res)=>{
     try {
        console.log("entro a /update");
         const body=req.body
-      
-        if(body.id && body.text  ){
-          // console.log(body.text);
-        await controller.update(body.id,body.text)
+      console.log(body);
+        if(body.userId && body.text  ){
+           
+        await controller.update(body)
        // let x= await controller.list()
         response.success(req,res,'user editation was completed',200);
         }else response.error(req,res,'send valid params',400)
@@ -70,9 +70,9 @@ postRouter.put('/',secure('post'),async(req,res)=>{
         response.error(req,res,error.message,error.statusCode)
     }
 })
-postRouter.delete('/remove/:id',secure('follow'),async(req, res)=>{
+postRouter.delete('/:id',secure('follow'),async(req, res)=>{
     try {
-       // console.log("entro a /remove");
+       console.log("entro a /remove");
         const {id}=req.params
        
         if(id ){

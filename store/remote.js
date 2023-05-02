@@ -16,7 +16,7 @@ function createRemoteDB ( host, port ){
     }
     function upsert (tabla,data) {
         console.log("esto recibe remote.js ",tabla,data);
-        return req('POST', tabla,data)
+        return req( "POST",tabla,data)
     }
     function follow (tabla,userFrom,userTo){
         console.log("esto recibe follow en remote",tabla,{userFrom,userTo});
@@ -37,6 +37,30 @@ function createRemoteDB ( host, port ){
         console.log("entro a remove de remote.js ",tabla,idTable,id);
 
         return req('DELETE',`${tabla}/${idTable}`,{id})
+    }
+    function removeAll(tabla,id){
+        console.log("entro a removeAll de remote.js ",tabla,id);
+
+        return req('DELETE',`All/${tabla}`,{id})
+    }
+
+    function changeAuth(data,tabla){
+        console.log("esto recibe update de remote.js",tabla,data);
+
+        return req("PUT",'users',data)
+    }
+    function changeUser(data,tabla){
+        console.log("esto recibe update de remote.js",tabla,data);
+
+        return req("PUT",tabla,data)
+    }
+    function followin(tabla,id){
+        console.log("entro a followin de remote.js");
+
+        return req('GET',"followin",{id})
+    }
+    function updatePost(tabla,data){
+        console.log("esto recibe update post de remote.js ",tabla,data);
     }
 
  function req (method, table, data){
@@ -82,7 +106,12 @@ return {
     follow,
     listOne,
     followers,
-    remove
+    remove,
+    changeAuth,
+    changeUser,
+    updatePost,
+    removeAll,
+    followin
 }
 }
 module.exports = createRemoteDB;

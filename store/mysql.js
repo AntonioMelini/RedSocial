@@ -230,6 +230,16 @@ async function follow(tabla,userFrom,userTo){
         })
     })
 }
+function removeAll(tabla,prop,id){
+   
+    return new Promise((resolve,rejected)=>{
+        coneccion.query(`delete from Red_Social.${tabla} where ${prop}=${id} `,(err,data)=>{
+            if (err) return rejected(err)
+
+            resolve(data)
+        })
+    })
+}
 function followers(id){
     console.log("entro a followers remote.js");
     return new Promise((resolve,rejected)=>{
@@ -252,6 +262,18 @@ function updatePost(tabla,id,text){
     })
 }
 
+function followin(id) {
+    console.log("entro a followin de mysql");
+    return new Promise((resolve,rejected)=>{
+        coneccion.query(`select * from Red_Social.user_follow where User_from=${id}`,(err,data)=>{
+
+            if(err) return rejected(err)
+
+            resolve(data)
+        })
+    })
+}
+
 //coneccion.end();
 module.exports={
     list,
@@ -264,7 +286,9 @@ module.exports={
     followers,
     listOne,
     updatePost,
-    removeFollow
+    removeFollow,
+    removeAll,
+    followin
 
 }
 

@@ -45,6 +45,12 @@ async function update(body){
 function remove(id){
     console.log("entro a remove controler",id);
     return store.remove(TABLA,id);
+
+}
+function followin(id){
+    console.log("entro a followin de controler",id);
+    return store.followin('user_follow',id)
+
 }
 
 function follow(tabla,userFrom,userTo){
@@ -65,5 +71,6 @@ return {
     update,
     follow,
     followers,
+    followin
 }
 }
