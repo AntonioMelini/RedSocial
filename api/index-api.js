@@ -12,7 +12,7 @@ const config = require('../config.js')
 app.use(bodyParser.json())
 app.use('/api/user', user);
 app.use('/api/auth',authRouter);
-//app.use('/api/post',postouter)
+//app.use('/api/post',postouter) 
 
 app.listen(config.api.port,()=>console.log('servicio post escuchando en el puerto',config.api.port)) 
 
