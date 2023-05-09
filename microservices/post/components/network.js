@@ -43,6 +43,7 @@ postRouter.get('/getOne/:id',async(req, res)=>{
         const {id}=req.params
        console.log("entro a getone de post");
         if(id.trim()!="" ){
+        
         let x=await controller.getOne(id)
         response.success(req,res,x,200);
         }else response.error(req,res,'send valid id',400)
@@ -53,16 +54,18 @@ postRouter.get('/getOne/:id',async(req, res)=>{
 })
 
 
-postRouter.put('/',secure('post'),async(req,res)=>{
+postRouter.put('/:id',secure('post'),async(req,res)=>{
     try {
-       console.log("entro a /update");
+       console.log("entro a /update post");
         const body=req.body
+        const {id}=req.params
       console.log(body);
-        if(body.userId && body.text  ){
+        if(body.userId && body.text  && id){
            
-        await controller.update(body)
+        let x=await controller.update(body,id)
+        console.log("esto devuelve x : ", x);
        // let x= await controller.list()
-        response.success(req,res,'user editation was completed',200);
+        return x ?   response.success(req,res,'user editation was completed',200):response.error(req,res,"post id is invalid",400);
         }else response.error(req,res,'send valid params',400)
     } catch (error) {
         console.log("aparecio un error");
@@ -79,7 +82,7 @@ postRouter.delete('/:id',secure('follow'),async(req, res)=>{
         let x=await controller.remove(id,req.user.id)
         console.log("esto devuelve el coso",x);
         // if (x.affectedRows) {
-             return response.success(req,res,x,200); 
+             return response.success(req,res,"remove was succed",200); 
         // }
         //response.error(req,res,"post with that id does´t exist",400)
         

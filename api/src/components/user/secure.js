@@ -21,7 +21,8 @@ module.exports = function checkAuth  (action){
                 break;
             case 'post':
                 let b=auth.antonio(req,res,req.body.userId)
-                if(!b)next();
+                if(b==200)next();
+                else{response.error(req,res,b.message||b,400)}
                 break;
             default:
                 next();

@@ -2,7 +2,7 @@
 const request = require('request')
 
 function createRemoteDB ( host, port ){
-    console.log("entroooo");
+    console.log("create remote db conected");
     const URL =  `http://${host}:${port}`;
     
     function list (table) {
@@ -15,7 +15,7 @@ function createRemoteDB ( host, port ){
         return req('POST',tabla,{username,password})
     }
     function upsert (tabla,data) {
-        console.log("esto recibe remote.js ",tabla,data);
+        console.log("esto recibe upsert remote.js ",tabla,data);
         return req( "POST",tabla,data)
     }
     function follow (tabla,userFrom,userTo){
@@ -23,8 +23,8 @@ function createRemoteDB ( host, port ){
 
         return req('POST',tabla,{userFrom,userTo})
     }
-    function listOne(tabla,id,prop){
-        console.log("getOne datos",tabla,id,prop);
+    function getOne(tabla,id,prop){
+        console.log("getOne remote.js datos :",tabla,id,prop);
 
         return req('GET',`${tabla}/${id}`,{id,prop})
     }
@@ -54,7 +54,7 @@ function createRemoteDB ( host, port ){
 
         return req("PUT",tabla,data)
     }
-    function followin(tabla,id){
+    function followin(id){
         console.log("entro a followin de remote.js");
 
         return req('GET',"followin",{id})
@@ -81,17 +81,17 @@ function createRemoteDB ( host, port ){
             
 
         },(err,req,body)=>{
-           // console.log("body sin json.parse",body);
-           body=JSON.parse(body);
-            console.log("!!!!!!!!! esto es body ya !!!!!",body);
+           console.log("body sin json.parse",body);
+           body= !body ? body : JSON.parse(body) ;
+           // console.log("!!!!!!!!! esto es body ya !!!!!",body);
             if (err || body.error) {//
               // console.log(err,body.body);
                 console.error("Error con base de datos remota",body.body)
                 return rejected( body)
             }else{
-                //console.log("esto es el body",JSON.parse(body));
+               console.log("esto es el body",body);
            // const resp = JSON.parse(body);
-            return resolve(body.body)
+            return resolve(body.body || body)
             }
             
 
@@ -104,7 +104,7 @@ return {
     upsert,
     query,
     follow,
-    listOne,
+    getOne,
     followers,
     remove,
     changeAuth,

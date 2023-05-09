@@ -39,12 +39,13 @@ router.get('/follow/:id',secure('follow'),async(req,res)=>{
         response.error(req,res,error.body.sqlMessage ||error.message,401)
     } 
 })
-router.get('/follow',secure('follow'),async (req,res)=>{
+router.get('/followers',secure('follow'),async (req,res)=>{
     try {
         
         let data= await controller.followers(req.user.id)
-        console.log("esto es controller user",data);
-        response.success(req,res,data,200)
+        //console.log("esto es controller user",data);
+        return data.length ? response.success(req,res,data,200) : response.success(req,res,"without followers",200)
+       
     } catch (error) {
         console.log("entro a error de follow",error);
         response.error(req,res,error.message,500)
@@ -52,8 +53,9 @@ router.get('/follow',secure('follow'),async (req,res)=>{
 })
 router.get('/followin',secure('follow'),async(req,res)=>{
     try {
+        console.log("entro a following network");
         let x= await controller.followin(req.user.id);
-        console.log("esto es lo que devolvio todo",x);
+        console.log("este es el usuario final ",x);
         x.length ? response.success(req,res,x,200) :  response.success(req,res,"not following´s users yet")
     } catch (error) {
         console.log("entro a error de followin de user");

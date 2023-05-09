@@ -35,10 +35,11 @@ const antonio=(req,res,owner)=>{
             
         }
         req.user=tokenListo
+       
         return x=200
        
     } catch (error) {
-        //console.log("este es el error",error);
+        console.log("este es el error",error);
          return error.message
     }
         

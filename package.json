@@ -5,10 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js",
-    "dev": "nodemon api/index.js",
-    "mysql": "nodemon microservices/mysql/index.js",
-    "post":"nodemon microservices/post/index.js"
+    "start": "nodemon microservices/cache/index-cache.js",
+    "dev": "nodemon api/index-api.js",
+    "mysql": "nodemon microservices/mysql/index-mysql.js",
+    "post": "nodemon microservices/post/index-post.js"
   },
   "author": "",
   "license": "ISC",
@@ -21,6 +21,7 @@
     "jsonwebtoken": "^9.0.0",
     "mysql2": "^3.2.0",
     "nodemon": "^2.0.21",
+    "redis": "^4.6.6",
     "request": "^2.88.2"
   }
 }

@@ -36,7 +36,7 @@ function list (tabla){
             })
         })
 }
-function listOne(tabla,id,prop){
+function getOne(tabla,id,prop){
     console.log("entro a listone mysql");
     console.log(id,prop);
 
@@ -251,7 +251,7 @@ function followers(id){
     })
 }
 function updatePost(tabla,id,text){
-
+console.log("entro a updatePost ; ",tabla,id,text);
     return new Promise((resolve,rejected)=>{
         coneccion.query(`update  Red_Social.${tabla} set text='${text}' where id=${id}`,(err,datos)=>{
 
@@ -263,16 +263,22 @@ function updatePost(tabla,id,text){
 }
 
 function followin(id) {
-    console.log("entro a followin de mysql");
-    return new Promise((resolve,rejected)=>{
-        coneccion.query(`select * from Red_Social.user_follow where User_from=${id}`,(err,data)=>{
+    console.log("entro a followin de mysql : ", id);
+
+
+    return new Promise ((resolve,rejected)=>{
+        coneccion.query(`select user_to from Red_Social.user_follow where User_from='${id}'`,(err,datos)=>{
 
             if(err) return rejected(err)
 
-            resolve(data)
+            resolve(datos)
         })
     })
+
 }
+
+
+ 
 
 //coneccion.end();
 module.exports={
@@ -284,7 +290,7 @@ module.exports={
     changeUser,
     follow,
     followers,
-    listOne,
+    getOne,
     updatePost,
     removeFollow,
     removeAll,

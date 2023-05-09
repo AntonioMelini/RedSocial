@@ -22,19 +22,19 @@ const getAll=async (req,res,next)=>{
 }
 const getOne=async (req,res,next)=>{
     try {
-        console.log("entro a getOne microservice");
+        console.log("entro a getOne microservice MYSQL");
         const {tabla,id}=req.params;
         if(tabla && id){
             if(tabla==='user_follow'){
-                let data = await store.listOne(tabla,id,'id')
+                let data = await ne(tabla,id,'id')
                 return response.success(req,res,data,200) 
             }
             if(tabla=='post'){
                 console.log("entro a post en microservice");
-                let data = await store.listOne(tabla,id,'id')
+                let data = await store.getOne(tabla,id,'id')
                 return response.success(req,res,data,200)
             }
-            let data = await store.listOne(tabla,id,'id')
+            let data = await store.getOne(tabla,id,'id')
             data.length ? response.success(req,res,data,200) 
             : response.error(req,res,'invalid id',400)
         }else{
